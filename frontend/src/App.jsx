@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import PatientDashboard from './pages/patientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PharmacistDashboard from './pages/PharmacistDashboard';
+import image from './assets/hospital-photo.png';
 
 // API base URL configuration
 export const API_URL = 'http://localhost:5000';
@@ -13,7 +14,7 @@ export const API_URL = 'http://localhost:5000';
 const App = () => {
   return (
   <Router>
-    <div className="flex flex-col items-center justify-center min-h-screen bg-hero">
+    <div className="flex flex-col items-center justify-center min-h-screen" style={{backgroundImage: `url(${image})`}}>
       <h1 className="text-4xl font-bold text-white mb-8">Welcome to the Pharmacy Assistant</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <Link to="/login/patient">
