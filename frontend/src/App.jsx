@@ -9,7 +9,7 @@ import PharmacistDashboard from './pages/PharmacistDashboard';
 import image from './assets/hospital-photo.png';
 
 // API base URL configuration
-export const API_URL = 'http://localhost:5000';
+export const API_URL = 'https://web-backend.vercel.app';
 
 const App = () => {
   return (
