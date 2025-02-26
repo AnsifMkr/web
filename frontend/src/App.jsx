@@ -6,7 +6,7 @@ import Register from './pages/Register';
 import PatientDashboard from './pages/patientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PharmacistDashboard from './pages/PharmacistDashboard';
-import {image} from './assets/hospital-photo.png';
+import image from './assets/hospital-photo.png';
 
 // API base URL configuration
 export const API_URL = 'http://localhost:5000';
