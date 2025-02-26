@@ -1,9 +1,8 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
-
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
@@ -37,8 +36,11 @@ const User = mongoose.model('User', userSchema);
 const prescriptionSchema = new mongoose.Schema({
   uid: { type: String, required: true },
   type: { type: String, enum: ['diabetes', 'general'], required: true },
-  medication: { type: String, required: true },
-  quantity: { type: Number, required: true },
+  Metformin: { type: Number, default: null }, // Quantity for Metformin
+  Glimepiride: { type: Number, default: null }, // Quantity for Glimepiride
+  Vildagliptin: { type: Number, default: null }, // Quantity for Vildagliptin
+  Pioglitazone: { type: Number, default: null }, // Quantity for Pioglitazone
+  generalPrescription: { type: String, default: null }, // General prescription text
   doctor: { type: String, required: true },
   date: { type: Date, default: Date.now },
   fulfilled: { type: Boolean, default: false },
@@ -108,7 +110,7 @@ app.post('/login/:role', async (req, res) => {
     console.error('Login Error:', err.message);
     res.status(400).json({ error: 'An error occurred during login. Please try again.' });
   }
-});
+}); 
 
 app.get('/user/:uid', async (req, res) => {
   try {
@@ -123,14 +125,32 @@ app.get('/user/:uid', async (req, res) => {
 
 app.post('/prescription', async (req, res) => {
   try {
-    const { uid, type, medication, quantity, doctor } = req.body;
-    const newPrescription = new Prescription({ uid, type, medication, quantity, doctor });
+    const { uid, type, Metformin, Glimepiride, Vildagliptin, Pioglitazone, generalPrescription, doctor } = req.body;
+
+    // Validate required fields
+    if (!uid || !type || !doctor) {
+      return res.status(400).json({ error: 'Missing required fields: uid, type, or doctor.' });
+    }
+
+    // Create a new prescription
+    const newPrescription = new Prescription({
+      uid,
+      type,
+      Metformin: Metformin || null,
+      Glimepiride: Glimepiride || null,
+      Vildagliptin: Vildagliptin || null,
+      Pioglitazone: Pioglitazone || null,
+      generalPrescription: generalPrescription || null,
+      doctor,
+    });
+
     await newPrescription.save();
-    res.status(201).json({ message: 'Prescription added successfully' });
+    res.status(201).json({ message: 'Prescription added successfully', prescription: newPrescription });
   } catch (err) {
     res.status(400).json({ error: 'An error occurred while adding the prescription. Please try again.' });
   }
 });
+
 
 app.get('/prescriptions/:uid', async (req, res) => {
   try {
