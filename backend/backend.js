@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:5173', credentials: true })); // Allow requests from frontend
+app.use(cors({ origin: 'https://web-frontend-jet.vercel.app/', credentials: true })); // Allow requests from frontend
 
 // MongoDB connection
 const MONGO_URI = 'mongodb+srv://apasproject2025:vZV3SFgEnQ9e73wK@cluster0.mhaam.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
