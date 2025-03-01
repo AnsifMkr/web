@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
-import PatientDashboard from './pages/patientDashboard';
+import PatientDashboard from './pages/PatientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PharmacistDashboard from './pages/PharmacistDashboard';
 import image from './assets/hospital-photo.png';
