@@ -88,7 +88,7 @@ const Register = () => {
         phone: formData.phone,
         uid: formData.uid,
       };
-  
+      const API_URL = "https://web-backend-jet.vercel.app";
       const response = await axios.post(`${API_URL}/register/${userData.role}/`, userData, {
         headers: {
           'Content-Type': 'application/json',
