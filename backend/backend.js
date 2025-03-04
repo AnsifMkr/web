@@ -9,13 +9,17 @@ app.use(express.json());
 
 
 
-// ✅ Allow CORS for the frontend
-app.use(cors({
-  origin: 'https://web-frontend-jet.vercel.app', // Allow frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow required HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow headers
-  credentials: true, // Allow credentials (cookies, authorization headers)
-}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://web-frontend-jet.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send();
+  }
+  next();
+});
 
 // ✅ Handle preflight requests properly
 app.options('*', cors());
