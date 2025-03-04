@@ -17,7 +17,6 @@ app.use(cors({
 }));
 
 // MongoDB connection
-const MONGO_URI = 'mongodb+srv://apasproject2025:vZV3SFgEnQ9e73wK@cluster0.mhaam.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(MONGO_URI);
 
 const db = mongoose.connection;
@@ -202,7 +201,6 @@ app.get('/', (req, res) => {
   res.send('API is working');
 });
 
-const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
