@@ -9,13 +9,12 @@ app.use(express.json());
 
 
 
-// app.use(cors({
-//   origin: ['https://web-frontend-jet.vercel.app'], // Allow specific origin
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow necessary HTTP methods
-//   allowedHeaders: ['Content-Type'], // Allow necessary headers
-//   credentials: true, // Allow cookies if needed
-// }));
-app.use(cors());
+app.use(cors({
+  origin: 'https://web-frontend-jet.vercel.app', // Allow requests from frontend
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization',
+}));
+
 
 // MongoDB connection
 mongoose.connect(MONGO_URI);
