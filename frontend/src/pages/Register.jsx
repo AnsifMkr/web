@@ -89,7 +89,7 @@ const Register = () => {
         uid: formData.uid,
       };
   
-      const response = await axios.post(`${API_URL}/register/${role}`, userData, {
+      const response = await axios.post(`${API_URL}/register/${userData.role}`, userData, {
         headers: {
           'Content-Type': 'application/json',
         },
