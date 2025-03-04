@@ -6,7 +6,14 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: 'https://web-frontend-jet.vercel.app', credentials: true })); // Allow requests from frontend
+
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://web-frontend-jet.vercel.app'], // Allow specific origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow necessary HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
+  credentials: true, // Allow cookies if needed
+}));
+app.options('*', cors());
 
 // MongoDB connection
 const MONGO_URI = 'mongodb+srv://apasproject2025:vZV3SFgEnQ9e73wK@cluster0.mhaam.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
