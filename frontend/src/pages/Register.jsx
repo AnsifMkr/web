@@ -89,7 +89,11 @@ const Register = () => {
         uid: formData.uid,
       };
   
-      const response = await axios.post(`${API_URL}/register/${role}`, userData);
+      const response = await axios.post(`${API_URL}/register/${role}`, userData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
   
       // After successful registration, redirect to login
       setError('');
