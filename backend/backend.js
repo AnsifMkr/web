@@ -9,11 +9,16 @@ app.use(express.json());
 
 
 
+// ✅ Allow CORS for the frontend
 app.use(cors({
-  origin: 'https://web-frontend-jet.vercel.app', // Allow requests from frontend
-  methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization',
+  origin: 'https://web-frontend-jet.vercel.app', // Allow frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow required HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow headers
+  credentials: true, // Allow credentials (cookies, authorization headers)
 }));
+
+// ✅ Handle preflight requests properly
+app.options('*', cors());
 
 
 // MongoDB connection
