@@ -81,7 +81,7 @@ const Register = () => {
       const userData = {
         username: formData.username,
         password: formData.password,
-        role: role,
+        role: "patient",
         age: formData.age,
         gender: formData.gender,
         address: formData.address,
