@@ -15,6 +15,7 @@ app.options('*', cors());
 
 
 // MongoDB connection
+const MONGO_URI = 'mongodb+srv://apasproject2025:vZV3SFgEnQ9e73wK@cluster0.mhaam.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(MONGO_URI);
 
 const db = mongoose.connection;
