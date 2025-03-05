@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import API_URL from "../App";
 import axios from 'axios';
+import React, { useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ENDPOINTS } from "../config/api";
 
 const Login = () => {
   const { role } = useParams(); // Get the role from the URL (patient, doctor, pharmacist)
@@ -15,7 +15,7 @@ const Login = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post(`${API_URL}/login/${role}`, {
+      const response = await axios.post(ENDPOINTS.login(role), {
         loginIdentifier, // Send loginIdentifier (username or UID)
         password,
       });
@@ -29,6 +29,8 @@ const Login = () => {
           localStorage.setItem('loggedInDoctor', JSON.stringify(response.data.user));
         } else if (role === 'patient') {
           localStorage.setItem('loggedInPatient', JSON.stringify(response.data.user));
+        } else if (role === 'pharmacist') {
+          localStorage.setItem('loggedInPharmacist', JSON.stringify(response.data.user));
         }
   
         navigate(`/dashboard/${role}`);

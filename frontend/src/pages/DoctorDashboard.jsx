@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import API_URL from "../App";
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL, ENDPOINTS } from "../config/api";
 
 const DoctorDashboard = () => {
   const [uid, setUid] = useState('');
@@ -25,57 +25,57 @@ const DoctorDashboard = () => {
   }, []);
 
   // Fetch patient details by UID
-  // Fetch patient details by UID
-const fetchPatientDetails = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/user/${uid}`);
-    setPatientData(response.data);
+  const fetchPatientDetails = async () => {
+    try {
+      const response = await axios.get(ENDPOINTS.user(uid));
+      setPatientData(response.data);
 
-    // Fetch prescriptions for the patient
-    const prescriptionsResponse = await axios.get(`${API_URL}/prescriptions/${uid}`);
-    setRecentPrescriptions(prescriptionsResponse.data);
-    setError('');
-  } catch (error) {
-    setError('Patient not found. Please check the UID.');
-    setPatientData(null);
-    setRecentPrescriptions([]);
-  }
-};
+      // Fetch prescriptions for the patient
+      const prescriptionsResponse = await axios.get(ENDPOINTS.prescriptions(uid));
+      setRecentPrescriptions(prescriptionsResponse.data);
+      setError('');
+    } catch (error) {
+      setError('Patient not found. Please check the UID.');
+      setPatientData(null);
+      setRecentPrescriptions([]);
+    }
+  };
 
-// Save prescription to the backend
-const savePrescription = async (type) => {
-  if (
-    !uid ||
-    (type === 'diabetes' && (!diabetesPrescription.medicine || !diabetesPrescription.quantity || isNaN(diabetesPrescription.quantity))) ||
-    (type === 'general' && !generalPrescription)
-  ) {
-    setError('Please complete the prescription details before saving.');
-    return;
-  }
+  // Save prescription to the backend
+  const savePrescription = async (type) => {
+    if (
+      !uid ||
+      (type === 'diabetes' && (!diabetesPrescription.medicine || !diabetesPrescription.quantity || isNaN(diabetesPrescription.quantity))) ||
+      (type === 'general' && !generalPrescription)
+    ) {
+      setError('Please complete the prescription details before saving.');
+      return;
+    }
 
-  try {
-    const newPrescription = {
-      uid,
-      type,
-      medication: type === 'diabetes' ? diabetesPrescription.medicine : generalPrescription,
-      quantity: type === 'diabetes' ? diabetesPrescription.quantity : null,
-      doctor: loggedInDoctor.username || 'Unknown Doctor',
-    };
+    try {
+      const newPrescription = {
+        uid,
+        type,
+        medication: type === 'diabetes' ? diabetesPrescription.medicine : generalPrescription,
+        quantity: type === 'diabetes' ? diabetesPrescription.quantity : null,
+        doctor: loggedInDoctor.username || 'Unknown Doctor',
+      };
 
-    const response = await axios.post(`${API_URL}/prescription`, newPrescription);
+      const response = await axios.post(`${API_BASE_URL}/prescription`, newPrescription);
 
-    // Clear prescription inputs
-    if (type === 'diabetes') setDiabetesPrescription({ medicine: '', quantity: '' });
-    if (type === 'general') setGeneralPrescription('');
+      // Clear prescription inputs
+      if (type === 'diabetes') setDiabetesPrescription({ medicine: '', quantity: '' });
+      if (type === 'general') setGeneralPrescription('');
 
-    // Refresh recent prescriptions
-    setRecentPrescriptions([response.data, ...recentPrescriptions]);
-    setError('');
-  } catch (error) {
-    setError('Failed to save prescription. Please try again.');
-    console.error('Error saving prescription:', error);
-  }
-};
+      // Refresh recent prescriptions
+      setRecentPrescriptions([response.data, ...recentPrescriptions]);
+      setError('');
+    } catch (error) {
+      setError('Failed to save prescription. Please try again.');
+      console.error('Error saving prescription:', error);
+    }
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen p-8">
       <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8">

@@ -8,9 +8,6 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import PharmacistDashboard from './pages/PharmacistDashboard';
 import image from './assets/hospital-photo.png';
 
-// API base URL configuration
-export const API_URL = 'https://web-backend.vercel.app';
-
 const App = () => {
   return (
   <Router>

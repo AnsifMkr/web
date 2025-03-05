@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import API_URL from "../App";
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ENDPOINTS } from "../config/api";
 
 const Register = () => {
   const { role } = useParams(); // Get the role from URL params (e.g., patient, doctor, pharmacist)
@@ -88,9 +88,8 @@ const Register = () => {
         phone: formData.phone,
         uid: formData.uid,
       };
-      const API_URL = "https://web-backend.vercel.app";
       console.log("hai");
-      const response = await axios.post(`${API_URL}/register/${userData.role}/`, userData, {
+      const response = await axios.post(ENDPOINTS.register(userData.role), userData, {
         headers: {
           'Content-Type': 'application/json',
         },

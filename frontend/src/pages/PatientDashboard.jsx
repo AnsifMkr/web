@@ -1,11 +1,10 @@
+import axios from 'axios';
+import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import axios from 'axios';
-import API_URL from '../App';
+import { API_BASE_URL, ENDPOINTS } from '../config/api';
 
-
-  const PatientDashboard = () => {
+const PatientDashboard = () => {
   const [patientData, setPatientData] = useState(null);
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,11 +23,11 @@ import API_URL from '../App';
       }
   
       // Fetch patient details
-      const patientResponse = await axios.get(`${API_URL}/user/${loggedInPatient.uid}`);
+      const patientResponse = await axios.get(`${API_BASE_URL}${ENDPOINTS.user}/${loggedInPatient.uid}`);
       setPatientData(patientResponse.data);
   
       // Fetch patient prescriptions
-      const prescriptionsResponse = await axios.get(`${API_URL}/prescriptions/${loggedInPatient.uid}`);
+      const prescriptionsResponse = await axios.get(`${API_BASE_URL}${ENDPOINTS.prescriptions}/${loggedInPatient.uid}`);
       setPrescriptions(prescriptionsResponse.data);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
@@ -45,11 +44,11 @@ import API_URL from '../App';
     try {
       setLoading(true);
       const loggedInPatientUID = JSON.parse(localStorage.getItem('loggedInPatient'))?.uid;
-      const response = await axios.get(`http://localhost:5000/user/${loggedInPatientUID}`);
+      const response = await axios.get(`${API_BASE_URL}${ENDPOINTS.user}/${loggedInPatientUID}`);
       const patient = response.data;
       setPatientData(patient);
 
-      const prescriptionsResponse = await axios.get(`http://localhost:5000/prescriptions/${loggedInPatientUID}`);
+      const prescriptionsResponse = await axios.get(`${API_BASE_URL}${ENDPOINTS.prescriptions}/${loggedInPatientUID}`);
       setPrescriptions(prescriptionsResponse.data);
     } catch (error) {
       console.error('Error fetching data from backend:', error);

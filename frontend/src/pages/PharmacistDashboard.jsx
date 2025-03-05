@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import API_URL from "../App";
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { ENDPOINTS } from "../config/api";
 
 const PharmacistDashboard = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -32,7 +32,7 @@ const PharmacistDashboard = () => {
     setLoading(true);
     try {
       const queryParams = new URLSearchParams(filters).toString();
-      const response = await axios.get(`${API_URL}/pharmacist/prescriptions?${queryParams}`);
+      const response = await axios.get(`${ENDPOINTS.pharmacistPrescriptions}?${queryParams}`);
       setPrescriptions(response.data);
       setError('');
     } catch (err) {
@@ -45,7 +45,7 @@ const PharmacistDashboard = () => {
   
   const handleFulfillPrescription = async (prescriptionId) => {
     try {
-      await axios.patch(`${API_URL}/pharmacist/prescription/${prescriptionId}`);
+      await axios.patch(ENDPOINTS.updatePrescription(prescriptionId));
       // Refresh prescriptions after fulfillment
       fetchPrescriptions();
     } catch (err) {

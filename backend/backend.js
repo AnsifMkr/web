@@ -4,22 +4,38 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 require('dotenv').config();
 
+const PORT = process.env.PORT || 5000;
+
 const app = express();
 app.use(express.json());
 
+// Enhanced CORS configuration
+const corsOptions = {
+  origin: '*', // In production, replace with your frontend URL
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-// ✅ Handle preflight requests properly
-app.options('*', cors());
-
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // MongoDB connection
 const MONGO_URI = 'mongodb+srv://apasproject2025:vZV3SFgEnQ9e73wK@cluster0.mhaam.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-mongoose.connect(MONGO_URI);
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
@@ -58,11 +74,56 @@ const Prescription = mongoose.model('Prescription', prescriptionSchema);
 app.post('/register/:role', async (req, res) => {
   try {
     const { username, password, role, age, gender, address, phone, uid } = req.body;
+    const urlRole = req.params.role;
+
+    // Log registration attempt
+    console.log('Registration attempt:', { username, role, urlRole });
+
+    // Check if all required fields are present
+    if (!username || !password || !role || !uid) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['username', 'password', 'role', 'uid'],
+        received: Object.keys(req.body)
+      });
+    }
+
+    // Validate if role matches the URL parameter
+    if (role !== urlRole) {
+      return res.status(400).json({ 
+        error: 'Role mismatch between URL and body',
+        urlRole,
+        bodyRole: role
+      });
+    }
+
+    // Validate if role is valid
+    if (!['patient', 'doctor', 'pharmacist'].includes(role)) {
+      return res.status(400).json({ 
+        error: 'Invalid role',
+        validRoles: ['patient', 'doctor', 'pharmacist'],
+        receivedRole: role
+      });
+    }
+
+    // Validate UID format (assuming it should be 16 characters)
+    if (!/^[A-Z0-9]{16}$/.test(uid)) {
+      return res.status(400).json({ 
+        error: 'Invalid UID format',
+        message: 'UID must be 16 characters long and contain only uppercase letters and numbers'
+      });
+    }
 
     // Check if UID already exists
     const existingUser = await User.findOne({ uid });
     if (existingUser) {
       return res.status(400).json({ error: 'UID already exists' });
+    }
+
+    // Check if username already exists
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ error: 'Username already exists' });
     }
 
     // Hash the password
@@ -81,10 +142,14 @@ app.post('/register/:role', async (req, res) => {
     });
 
     await newUser.save();
+    console.log('User registered successfully:', { username, role, uid });
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
-    console.error('Registration Error:', err.message);
-    res.status(400).json({ error: 'An error occurred during registration. Please try again.' });
+    console.error('Registration Error:', err.message, err.stack);
+    res.status(400).json({ 
+      error: 'An error occurred during registration',
+      message: err.message
+    });
   }
 });
 
@@ -197,7 +262,17 @@ app.patch('/pharmacist/prescription/:id', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('API is working');
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  res.json({
+    status: 'API is working',
+    database: dbStatus,
+    endpoints: {
+      register: '/register/:role',
+      login: '/login/:role',
+      user: '/user/:uid',
+      prescriptions: '/prescriptions/:uid'
+    }
+  });
 });
 
 app.listen(PORT, () => {
