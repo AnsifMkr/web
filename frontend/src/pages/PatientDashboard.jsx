@@ -45,11 +45,11 @@ import API_URL from '../App';
     try {
       setLoading(true);
       const loggedInPatientUID = JSON.parse(localStorage.getItem('loggedInPatient'))?.uid;
-      const response = await axios.get(`http://localhost:5000/user/${loggedInPatientUID}`);
+      const response = await axios.get(`${API_URL}/user/${loggedInPatientUID}`);
       const patient = response.data;
       setPatientData(patient);
 
-      const prescriptionsResponse = await axios.get(`http://localhost:5000/prescriptions/${loggedInPatientUID}`);
+      const prescriptionsResponse = await axios.get(`${API_URL}/prescriptions/${loggedInPatientUID}`);
       setPrescriptions(prescriptionsResponse.data);
     } catch (error) {
       console.error('Error fetching data from backend:', error);
