@@ -7,8 +7,12 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-
-app.use(cors());
+const corsOption = {
+    origin: ['https://web-frontend-jet.vercel.app'],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}
+app.use(cors(corsOption));
 
 // ✅ Handle preflight requests properly
 app.options('*', cors());
