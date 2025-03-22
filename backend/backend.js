@@ -172,6 +172,19 @@ app.get('/prescriptions/:uid', async (req, res) => {
   }
 });
 
+//
+db.prescriptions.updateMany({}, { $set: { fulfilled: true } });
+
+//To GET all fulfilled prescriptions
+app.get('/pharmacist/prescriptions/fulfilled', async (req, res) => {
+  try {
+    const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
+    res.json(fulfilledPrescriptions);
+  } catch (err) {
+    res.status(400).json({ error: 'An error occurred while fetching fulfilled prescriptions. Please try again.' });
+  }
+});
+
 app.get('/pharmacist/prescriptions', async (req, res) => {
   try {
     const { uid, doctor } = req.query;
@@ -200,34 +213,31 @@ app.patch('/pharmacist/prescription/:id', async (req, res) => {
   }
 });
 
-//To GET all fulfilled prescriptions
-app.get('/pharmacist/prescriptions/fulfilled', async (req, res) => {
-  try {
-    const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
-    res.json(fulfilledPrescriptions);
-  } catch (err) {
-    res.status(400).json({ error: 'An error occurred while fetching fulfilled prescriptions. Please try again.' });
-  }
-});
-
 app.patch('/pharmacist/prescription/:id/revert', async (req, res) => {
   try {
     const { id } = req.params;
+
+    // ✅ Validate if ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid prescription ID' });
+    }
 
     const prescription = await Prescription.findById(id);
     if (!prescription) {
       return res.status(404).json({ error: 'Prescription not found' });
     }
 
-    // Update prescription to mark it as NOT fulfilled
+    // ✅ Update prescription to mark it as NOT fulfilled
     prescription.fulfilled = false;
     await prescription.save();
 
     res.json({ message: 'Prescription fulfillment reverted', prescription });
   } catch (err) {
-    res.status(400).json({ error: 'An error occurred while reverting the prescription status. Please try again.' });
+    console.error('Error reverting prescription:', err);
+    res.status(500).json({ error: 'An error occurred while reverting the prescription status. Please try again.' });
   }
 });
+
 
 
 app.get('/', (req, res) => {
