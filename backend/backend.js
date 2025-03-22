@@ -200,10 +200,41 @@ app.patch('/pharmacist/prescription/:id', async (req, res) => {
   }
 });
 
+//To GET all fulfilled prescriptions
+app.get('/pharmacist/prescriptions/fulfilled', async (req, res) => {
+  try {
+    const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
+    res.json(fulfilledPrescriptions);
+  } catch (err) {
+    res.status(400).json({ error: 'An error occurred while fetching fulfilled prescriptions. Please try again.' });
+  }
+});
+
+app.patch('/pharmacist/prescription/:id/revert', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const prescription = await Prescription.findById(id);
+    if (!prescription) {
+      return res.status(404).json({ error: 'Prescription not found' });
+    }
+
+    // Update prescription to mark it as NOT fulfilled
+    prescription.fulfilled = false;
+    await prescription.save();
+
+    res.json({ message: 'Prescription fulfillment reverted', prescription });
+  } catch (err) {
+    res.status(400).json({ error: 'An error occurred while reverting the prescription status. Please try again.' });
+  }
+});
+
+
 app.get('/', (req, res) => {
   res.send('API is working');
 });
 
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
