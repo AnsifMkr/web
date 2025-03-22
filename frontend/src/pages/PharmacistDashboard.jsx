@@ -33,7 +33,6 @@ const PharmacistDashboard = () => {
     try {
       const queryParams = new URLSearchParams(filters).toString();
       const response = await axios.get(`${API_URL}/pharmacist/prescriptions?${queryParams}`);
-      const newresponse = await axios.get(`${API_URL}/pharmacist/prescriptions/fulfilled?${queryParams}`); //newly added
       setPrescriptions(response.data);
       setError('');
     } catch (err) {
@@ -47,7 +46,6 @@ const PharmacistDashboard = () => {
   const handleFulfillPrescription = async (prescriptionId) => {
     try {
       await axios.patch(`${API_URL}/pharmacist/prescription/${prescriptionId}`);
-      await axios.patch(`${API_URL}/pharmacist/prescription/${prescriptionId}/revert`);//newly added
       
       // Refresh prescriptions after fulfillment
       fetchPrescriptions();
