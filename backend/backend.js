@@ -194,12 +194,9 @@ app.post('/revert-fulfilled-prescriptions', async (req, res) => {
       return res.status(404).json({ message: 'No fulfilled prescriptions found to revert' });
     }
     
-    // Get the IDs of all fulfilled prescriptions
-    const prescriptionIds = fulfilledPrescriptions.map(prescription => prescription._id);
-    
-    // Update all fulfilled prescriptions to unfulfilled in one operation
+    // Update all fulfilled prescriptions to unfulfilled in one batch operation
     const updateResult = await Prescription.updateMany(
-      { _id: { $in: prescriptionIds } },
+      { fulfilled: true },
       { $set: { fulfilled: false } }
     );
     
@@ -207,7 +204,7 @@ app.post('/revert-fulfilled-prescriptions', async (req, res) => {
     
     res.json({ 
       message: `Successfully reverted ${updateResult.modifiedCount} prescriptions from fulfilled to unfulfilled`,
-      originalPrescriptions: fulfilledPrescriptions
+      revertedPrescriptions: fulfilledPrescriptions
     });
   } catch (err) {
     console.error('Error reverting fulfilled prescriptions:', err.message);
