@@ -172,15 +172,21 @@ app.get('/prescriptions/:uid', async (req, res) => {
   }
 });
 
-app.get('/fulfilled-prescriptions', async (req, res) => {
+app.get('/pharmacist/fulfilled-prescriptions', async (req, res) => {
   try {
     const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
+
+    if (fulfilledPrescriptions.length === 0) {
+      return res.status(404).json({ message: 'No fulfilled prescriptions found' });
+    }
+
     res.json(fulfilledPrescriptions);
   } catch (err) {
     console.error('Error fetching fulfilled prescriptions:', err.message);
     res.status(400).json({ error: 'An error occurred while fetching fulfilled prescriptions. Please try again.' });
   }
 });
+
 
 app.patch('/revert-fulfilled-prescriptions', async (req, res) => {
   try {
