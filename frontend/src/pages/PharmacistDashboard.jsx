@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { API_URL } from '../App'; // Ensure API_URL is correctly defined
+
 const PharmacistDashboard = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [error, setError] = useState('');
@@ -6,37 +10,38 @@ const PharmacistDashboard = () => {
     fetchPrescriptions();
   }, []);
 
-  // Fetch prescriptions from localStorage
+  // Fetch prescriptions from API
   const fetchPrescriptions = async () => {
     try {
-      const response = await axios.get(`${API_URL}/prescriptions`);
+      console.log(`Fetching prescriptions from: ${API_URL}/prescriptions`);
+      
+      const response = await axios.get(`${API_URL}/prescriptions`, {
+        withCredentials: true, // Ensures cookies/sessions are included
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      console.log('Prescriptions Response:', response.data);
       setPrescriptions(response.data);
-      setError("");
+      setError('');
     } catch (error) {
-      setError("Failed to fetch prescriptions. Please try again.");
-      console.error("Error fetching prescriptions:", error);
+      setError('Failed to fetch prescriptions. Please try again.');
+      console.error('Error fetching prescriptions:', error);
     }
   };
-  
-  useEffect(() => {
-    fetchPrescriptions();
-  }, []);
-  
 
-  // Handle fulfilling a prescription (mark as fulfilled)
+  // Handle fulfilling a prescription
   const handleFulfillPrescription = async (prescriptionId) => {
     try {
-      await axios.put(`${API_URL}/prescriptions/${prescriptionId}`, { fulfilled: true });
-  
+      await axios.put(`${API_URL}/prescriptions/${prescriptionId}`, { fulfilled: true }, { withCredentials: true });
+      
       // Refresh prescriptions list
       fetchPrescriptions();
-      setError("");
+      setError('');
     } catch (error) {
-      setError("Failed to fulfill prescription. Please try again.");
-      console.error("Error fulfilling prescription:", error);
+      setError('Failed to fulfill prescription. Please try again.');
+      console.error('Error fulfilling prescription:', error);
     }
   };
-  
 
   return (
     <div className="bg-gray-50 min-h-screen p-8">
@@ -52,8 +57,8 @@ const PharmacistDashboard = () => {
           <h3 className="text-2xl font-semibold text-gray-700 mb-4">Recent Prescriptions</h3>
           {prescriptions.length > 0 ? (
             <ul className="space-y-4">
-              {prescriptions.map((prescription, index) => (
-                <li key={index} className="bg-white p-4 rounded-lg shadow-md border border-gray-200 mb-4">
+              {prescriptions.map((prescription) => (
+                <li key={prescription.id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
                   <p><strong className="text-gray-600">Patient UID:</strong> {prescription.uid}</p>
                   <p><strong className="text-gray-600">Username:</strong> {prescription.username}</p>
                   <p><strong className="text-gray-600">Address:</strong> {prescription.address}</p>
@@ -61,34 +66,25 @@ const PharmacistDashboard = () => {
                   <p><strong className="text-gray-600">Type:</strong> {prescription.type}</p>
 
                   {/* Display only medicines with entered quantities */}
-                  {prescription.Metformin && (
-                    <p><strong className="text-gray-600">Metformin:</strong> {prescription.Metformin}</p>
-                  )}
-                  {prescription.Glimepiride && (
-                    <p><strong className="text-gray-600">Glimepiride:</strong> {prescription.Glimepiride}</p>
-                  )}
-                  {prescription.Vildagliptin && (
-                    <p><strong className="text-gray-600">Vildagliptin:</strong> {prescription.Vildagliptin}</p>
-                  )}
-                  {prescription.Pioglitazone && (
-                    <p><strong className="text-gray-600">Pioglitazone:</strong> {prescription.Pioglitazone}</p>
-                  )}
+                  {prescription.Metformin && <p><strong>Metformin:</strong> {prescription.Metformin}</p>}
+                  {prescription.Glimepiride && <p><strong>Glimepiride:</strong> {prescription.Glimepiride}</p>}
+                  {prescription.Vildagliptin && <p><strong>Vildagliptin:</strong> {prescription.Vildagliptin}</p>}
+                  {prescription.Pioglitazone && <p><strong>Pioglitazone:</strong> {prescription.Pioglitazone}</p>}
                   {prescription.generalPrescription && (
-                    <p><strong className="text-gray-600">General Prescription:</strong> {prescription.generalPrescription}</p>
+                    <p><strong>General Prescription:</strong> {prescription.generalPrescription}</p>
                   )}
 
-                  <p><strong className="text-gray-600">Date:</strong> {prescription.date}</p>
+                  <p><strong className="text-gray-600">Date:</strong> {new Date(prescription.date).toLocaleString()}</p>
 
                   {/* Fulfill Prescription Button */}
-                  {!prescription.fulfilled && (
+                  {!prescription.fulfilled ? (
                     <button
                       onClick={() => handleFulfillPrescription(prescription.id)}
                       className="mt-2 px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition"
                     >
                       Fulfill Prescription
                     </button>
-                  )}
-                  {prescription.fulfilled && (
+                  ) : (
                     <p className="text-green-600 mt-2">Prescription Fulfilled</p>
                   )}
                 </li>
