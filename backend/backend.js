@@ -182,7 +182,7 @@ app.get('/fulfilled-prescriptions', async (req, res) => {
   }
 });
 
-app.post('/revert-fulfilled-prescriptions', async (req, res) => {
+app.patch('/revert-fulfilled-prescriptions', async (req, res) => {
   try {
     console.log('Retrieving and reverting fulfilled prescriptions');
     
