@@ -172,6 +172,16 @@ app.get('/prescriptions/:uid', async (req, res) => {
   }
 });
 
+app.get('/fulfilled-prescriptions', async (req, res) => {
+  try {
+    const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
+    res.json(fulfilledPrescriptions);
+  } catch (err) {
+    console.error('Error fetching fulfilled prescriptions:', err.message);
+    res.status(400).json({ error: 'An error occurred while fetching fulfilled prescriptions. Please try again.' });
+  }
+});
+
 app.get('/pharmacist/prescriptions', async (req, res) => {
   try {
     const { uid, doctor } = req.query;
