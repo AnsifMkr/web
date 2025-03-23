@@ -182,6 +182,40 @@ app.get('/fulfilled-prescriptions', async (req, res) => {
   }
 });
 
+app.post('/revert-fulfilled-prescriptions', async (req, res) => {
+  try {
+    console.log('Retrieving and reverting fulfilled prescriptions');
+    
+    // Find all fulfilled prescriptions
+    const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
+    console.log(`Found ${fulfilledPrescriptions.length} fulfilled prescriptions to revert`);
+    
+    if (fulfilledPrescriptions.length === 0) {
+      return res.status(404).json({ message: 'No fulfilled prescriptions found to revert' });
+    }
+    
+    // Get the IDs of all fulfilled prescriptions
+    const prescriptionIds = fulfilledPrescriptions.map(prescription => prescription._id);
+    
+    // Update all fulfilled prescriptions to unfulfilled in one operation
+    const updateResult = await Prescription.updateMany(
+      { _id: { $in: prescriptionIds } },
+      { $set: { fulfilled: false } }
+    );
+    
+    console.log(`Reverted ${updateResult.modifiedCount} prescriptions from fulfilled to unfulfilled`);
+    
+    res.json({ 
+      message: `Successfully reverted ${updateResult.modifiedCount} prescriptions from fulfilled to unfulfilled`,
+      originalPrescriptions: fulfilledPrescriptions
+    });
+  } catch (err) {
+    console.error('Error reverting fulfilled prescriptions:', err.message);
+    res.status(400).json({ error: 'An error occurred while reverting prescriptions. Please try again.' });
+  }
+});
+
+
 app.get('/pharmacist/prescriptions', async (req, res) => {
   try {
     const { uid, doctor } = req.query;
