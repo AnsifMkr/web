@@ -9,7 +9,7 @@ import PharmacistDashboard from './pages/PharmacistDashboard';
 import image from './assets/hospital-photo.png';
 
 // API base URL configuration
-export const API_URL = 'https://web-hazel-one-84.vercel.app/';
+export const API_URL = 'https://web-hazel-one-84.vercel.app';
 
 const App = () => {
   return (
