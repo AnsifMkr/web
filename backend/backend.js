@@ -172,35 +172,25 @@ app.get('/prescriptions/:uid', async (req, res) => {
   }
 });
 
-app.get('/pharmacist/fulfilled-prescriptions', async (req, res) => {
+app.post('/fetch-and-revert-prescriptions', async (req, res) => {
   try {
-    const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
-
-    if (fulfilledPrescriptions.length === 0) {
-      return res.status(404).json({ message: 'No fulfilled prescriptions found' });
-    }
-
-    res.json(fulfilledPrescriptions);
-  } catch (err) {
-    console.error('Error fetching fulfilled prescriptions:', err.message);
-    res.status(400).json({ error: 'An error occurred while fetching fulfilled prescriptions. Please try again.' });
-  }
-});
-
-
-app.patch('/revert-fulfilled-prescriptions', async (req, res) => {
-  try {
-    console.log('Retrieving and reverting fulfilled prescriptions');
+    console.log('Fetching and reverting fulfilled prescriptions');
     
     // Find all fulfilled prescriptions
     const fulfilledPrescriptions = await Prescription.find({ fulfilled: true });
-    console.log(`Found ${fulfilledPrescriptions.length} fulfilled prescriptions to revert`);
+    console.log(`Found ${fulfilledPrescriptions.length} fulfilled prescriptions`);
     
     if (fulfilledPrescriptions.length === 0) {
-      return res.status(404).json({ message: 'No fulfilled prescriptions found to revert' });
+      return res.status(200).json({ 
+        message: 'No fulfilled prescriptions found to revert',
+        prescriptions: []
+      });
     }
     
-    // Update all fulfilled prescriptions to unfulfilled in one batch operation
+    // Save the found prescriptions to return in the response
+    const prescriptionsToReturn = [...fulfilledPrescriptions];
+    
+    // Update all fulfilled prescriptions to unfulfilled in one operation
     const updateResult = await Prescription.updateMany(
       { fulfilled: true },
       { $set: { fulfilled: false } }
@@ -209,12 +199,12 @@ app.patch('/revert-fulfilled-prescriptions', async (req, res) => {
     console.log(`Reverted ${updateResult.modifiedCount} prescriptions from fulfilled to unfulfilled`);
     
     res.json({ 
-      message: `Successfully reverted ${updateResult.modifiedCount} prescriptions from fulfilled to unfulfilled`,
-      revertedPrescriptions: fulfilledPrescriptions
+      message: `Successfully fetched and reverted ${updateResult.modifiedCount} prescriptions`,
+      prescriptions: prescriptionsToReturn
     });
   } catch (err) {
-    console.error('Error reverting fulfilled prescriptions:', err.message);
-    res.status(400).json({ error: 'An error occurred while reverting prescriptions. Please try again.' });
+    console.error('Error in fetch and revert operation:', err.message);
+    res.status(400).json({ error: 'An error occurred while processing prescriptions. Please try again.' });
   }
 });
 
