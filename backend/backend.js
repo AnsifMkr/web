@@ -248,7 +248,7 @@ app.patch('/pharmacist/prescription/:id', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('API is working');
+  res.send('Hussain not believing');
 });
 
 const PORT = process.env.PORT || 5000;
