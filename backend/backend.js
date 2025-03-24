@@ -91,6 +91,44 @@ app.post('/register/:role', async (req, res) => {
     res.status(400).json({ error: 'An error occurred during registration. Please try again.' });
   }
 });
+app.get('/dashboard/:role', async (req, res) => {
+  try {
+    const { role } = req.params;
+
+    if (role === 'patient') {
+      // For patients, we expect a query parameter "uid" to identify the patient
+      const { uid } = req.query;
+      if (!uid) {
+        return res.status(400).json({ error: 'Patient UID is required' });
+      }
+      // Find the patient by uid and ensure the role is 'patient'
+      const patient = await User.findOne({ uid, role: 'patient' });
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      // Retrieve prescriptions for this patient
+      const prescriptions = await Prescription.find({ uid });
+      return res.json({ patient, prescriptions });
+    } else if (role === 'doctor') {
+      // For doctors, assume a query parameter "doctor" is provided to filter prescriptions
+      const { doctor } = req.query;
+      if (!doctor) {
+        return res.status(400).json({ error: 'Doctor identifier is required' });
+      }
+      const prescriptions = await Prescription.find({ doctor });
+      return res.json({ doctor, prescriptions });
+    } else if (role === 'pharmacist') {
+      // For pharmacists, return all unfulfilled prescriptions
+      const prescriptions = await Prescription.find({ fulfilled: false });
+      return res.json({ prescriptions });
+    } else {
+      return res.status(400).json({ error: 'Invalid role specified' });
+    }
+  } catch (err) {
+    console.error('Error fetching dashboard data:', err.message);
+    res.status(400).json({ error: 'An error occurred while fetching dashboard data. Please try again.' });
+  }
+});
 
 app.post('/login/:role', async (req, res) => {
   try {
