@@ -10,7 +10,8 @@ const PatientDashboard = () => {
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const response = await fetch(`${API_URL}/dashboard/patient`, {
+        const patientUID = "BW6D9XG5V5KNDEHK";
+        const response = await fetch(`${API_URL}/dashboard/patient?uid=${patientUID}`, {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
