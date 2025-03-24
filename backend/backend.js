@@ -264,7 +264,7 @@ app.patch('/pharmacist/prescription/:id', async (req, res) => {
 app.get('/', (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
   res.json({
-    status: 'API is working',
+    status: 'Hussain not believing',
     database: dbStatus,
     endpoints: {
       register: '/register/:role',
