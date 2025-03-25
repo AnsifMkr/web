@@ -12,7 +12,7 @@
             "methods": ["OPTIONS"],
             "status": 200,
             "headers": {
-                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Origin": "https://web-frontend-jet.vercel.app",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, X-CSRF-Token, X-Requested-With, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
                 "Access-Control-Allow-Credentials": "true",
@@ -23,7 +23,7 @@
             "src": "/(.*)",
             "dest": "backend.js",
             "headers": {
-                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Origin": "https://web-frontend-jet.vercel.app",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, X-CSRF-Token, X-Requested-With, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
                 "Access-Control-Allow-Credentials": "true"
