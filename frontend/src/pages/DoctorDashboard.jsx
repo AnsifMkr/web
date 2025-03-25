@@ -29,11 +29,13 @@ const DoctorDashboard = () => {
 const fetchPatientDetails = async () => {
   try {
     const response = await axios.get(`${API_URL}/user/${uid}`);
-    setPatientData(response.data);
+    const data = await response.json();
+    setPatientData(data);
 
     // Fetch prescriptions for the patient
     const prescriptionsResponse = await axios.get(`${API_URL}/prescriptions/${uid}`);
-    setRecentPrescriptions(prescriptionsResponse.data);
+    const prescriptions = await response.json();
+    setRecentPrescriptions(prescriptions || []);
     setError('');
   } catch (error) {
     setError('Patient not found. Please check the UID.');
