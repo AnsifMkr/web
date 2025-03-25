@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { API_URL } from '../App'; // Ensure API_URL is correctly defined
+import { API_URL } from '../App';
 
 const PharmacistDashboard = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -12,10 +12,8 @@ const PharmacistDashboard = () => {
 
   // Fetch prescriptions from API
   const fetchPrescriptions = async () => {
-    try {
-      console.log(`Fetching prescriptions from: ${API_URL}/prescriptions`);
-      
-      const response = await axios.get(`${API_URL}/prescriptions`, {
+    try {      
+      const response = await axios.get(`${API_URL}/pharmacist/prescriptions`, {
         withCredentials: true, // Ensures cookies/sessions are included
         headers: { 'Content-Type': 'application/json' }
       });
@@ -32,7 +30,7 @@ const PharmacistDashboard = () => {
   // Handle fulfilling a prescription
   const handleFulfillPrescription = async (prescriptionId) => {
     try {
-      await axios.put(`${API_URL}/prescriptions/${prescriptionId}`, { fulfilled: true }, { withCredentials: true });
+      await axios.patch(`${API_URL}/pharmacist/prescription/${prescriptionId}`, { fulfilled: true }, { withCredentials: true });
       
       // Refresh prescriptions list
       fetchPrescriptions();
@@ -58,7 +56,7 @@ const PharmacistDashboard = () => {
           {prescriptions.length > 0 ? (
             <ul className="space-y-4">
               {prescriptions.map((prescription) => (
-                <li key={prescription.id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                <li key={prescription._id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
                   <p><strong className="text-gray-600">Patient UID:</strong> {prescription.uid}</p>
                   <p><strong className="text-gray-600">Username:</strong> {prescription.username}</p>
                   <p><strong className="text-gray-600">Address:</strong> {prescription.address}</p>
@@ -79,7 +77,7 @@ const PharmacistDashboard = () => {
                   {/* Fulfill Prescription Button */}
                   {!prescription.fulfilled ? (
                     <button
-                      onClick={() => handleFulfillPrescription(prescription.id)}
+                      onClick={() => handleFulfillPrescription(prescription._id)}
                       className="mt-2 px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition"
                     >
                       Fulfill Prescription

@@ -7,19 +7,37 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-const corsOption = {
-    origin: ['https://web-frontend-jet.vercel.app'],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-}
-app.use(cors(corsOption));
+// Add CORS configuration before your routes
+const allowedOrigins = [
+  'https://web-frontend-jet.vercel.app', 
+  'http://localhost:5173'
+];
 
-// ✅ Handle preflight requests properly
-app.options('*', cors());
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-CSRF-Token', 'X-Requested-With', 
+                   'Accept-Version', 'Content-Length', 'Content-MD5', 'Date', 'X-Api-Version'],
+  optionsSuccessStatus: 200
+}));
 
+// Add explicit OPTIONS handler for preflight requests
+app.options('*', (req, res) => {
+  res.status(200).end();
+});
 
 // MongoDB connection
-const MONGO_URI = 'mongodb+srv://apasproject2025:vZV3SFgEnQ9e73wK@cluster0.mhaam.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI;
 mongoose.connect(MONGO_URI);
 
 const db = mongoose.connection;
@@ -91,6 +109,7 @@ app.post('/register/:role', async (req, res) => {
     res.status(400).json({ error: 'An error occurred during registration. Please try again.' });
   }
 });
+
 app.get('/dashboard/:role', async (req, res) => {
   try {
     const { role } = req.params;
@@ -199,7 +218,6 @@ app.post('/prescription', async (req, res) => {
   }
 });
 
-
 app.get('/prescriptions/:uid', async (req, res) => {
   try {
     const { uid } = req.params;
@@ -246,7 +264,6 @@ app.post('/fetch-and-revert-prescriptions', async (req, res) => {
   }
 });
 
-
 app.get('/pharmacist/prescriptions', async (req, res) => {
   try {
     const { uid, doctor } = req.query;
@@ -275,11 +292,8 @@ app.patch('/pharmacist/prescription/:id', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('Hussain not believing');
-});
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

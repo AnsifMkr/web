@@ -7,10 +7,11 @@ const PatientDashboard = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const navigate = useNavigate();
 
+  const loggedInPatient = JSON.parse(localStorage.getItem('loggedInPatient'));
+
   useEffect(() => {
-    const fetchPatientData = async () => {
+    const fetchPatientData = async (patientUID) => {
       try {
-        const patientUID = "BW6D9XG5V5KNDEHK";
         const response = await fetch(`${API_URL}/dashboard/patient?uid=${patientUID}`, {
           headers: {
             'Content-Type': 'application/json',
@@ -33,8 +34,9 @@ const PatientDashboard = () => {
       }
     };
 
-    fetchPatientData();
-  }, [navigate]);
+    fetchPatientData(loggedInPatient.uid);
+
+  }, []);
 
   return (
     <div className="bg-gray-50 min-h-screen p-8">

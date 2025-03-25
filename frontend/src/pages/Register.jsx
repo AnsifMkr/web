@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import API_URL from "../App";
+import { API_URL } from '../App';
 import axios from 'axios';
 
 const Register = () => {
@@ -88,9 +88,9 @@ const Register = () => {
         phone: formData.phone,
         uid: formData.uid,
       };
-      const API_URL = "https://web-backend.vercel.app";
-      console.log("hai");
+
       const response = await axios.post(`${API_URL}/register/${userData.role}/`, userData, {
+        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
         },

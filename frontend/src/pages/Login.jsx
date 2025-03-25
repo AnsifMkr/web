@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import API_URL from "../App";
+import { API_URL } from '../App';
 import axios from 'axios';
 
 const Login = () => {
@@ -15,15 +15,19 @@ const Login = () => {
     e.preventDefault();
   
     try {
-      const API_URL = "https://web-backend.vercel.app";
       const response = await axios.post(`${API_URL}/login/${role}`, {
         loginIdentifier, // Send loginIdentifier (username or UID)
         password,
+      }, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
   
       if (response.data.message === 'Login successful') {
         setError(''); // Clear any previous error
-        console.log('Login successful');
   
         // Store the logged-in user's data in localStorage
         if (role === 'doctor') {
