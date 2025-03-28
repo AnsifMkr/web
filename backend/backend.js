@@ -270,7 +270,7 @@ app.get('/pharmacist/prescriptions', async (req, res) => {
     const filters = {};
     if (uid) filters.uid = uid;
     if (doctor) filters.doctor = doctor;
-    const prescriptions = await Prescription.find(filters);
+    const prescriptions = await Prescription.find(filters).populate('uid', 'username address phone');
     res.json(prescriptions);
   } catch (err) {
     res.status(400).json({ error: 'An error occurred while fetching prescriptions. Please try again.' });
