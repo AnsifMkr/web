@@ -6,7 +6,7 @@ import Register from './pages/Register';
 import PatientDashboard from './pages/PatientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PharmacistDashboard from './pages/PharmacistDashboard';
-import image from './assets/hospital-photo.png';
+import image from './assets/pharmacy.jpeg';
 
 
 // API base URL configuration
