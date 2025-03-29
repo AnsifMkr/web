@@ -58,9 +58,9 @@ const PharmacistDashboard = () => {
               {prescriptions.map((prescription) => (
                 <li key={prescription._id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
                   <p><strong className="text-gray-600">Patient UID:</strong> {prescription.uid}</p>
-                  <p><strong className="text-gray-600">Username:</strong> {prescription.username}</p>
-                  <p><strong className="text-gray-600">Address:</strong> {prescription.address}</p>
-                  <p><strong className="text-gray-600">Phone:</strong> {prescription.phone}</p>
+                  <p><strong className="text-gray-600">Username:</strong> {prescription.uid?.username}</p>
+                  <p><strong className="text-gray-600">Address:</strong> {prescription.uid?.address}</p>
+                  <p><strong className="text-gray-600">Phone:</strong> {prescription.uid?.phone}</p>
                   <p><strong className="text-gray-600">Type:</strong> {prescription.type}</p>
 
                   {/* Display only medicines with entered quantities */}
